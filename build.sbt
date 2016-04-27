@@ -23,6 +23,9 @@ lazy val runtime = (project in file("scalac-scoverage-runtime"))
   .settings(name := "scalac-scoverage-runtime")
   .settings(appSettings: _*)
 
+lazy val scalaLoggingSlf4j = "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2"
+lazy val scalaXml = "org.scala-lang.modules" %% "scala-xml" % "1.0.5"
+
 lazy val plugin = (project in file("scalac-scoverage-plugin"))
   .dependsOn(runtime % Test)
   .settings(name := "scalac-scoverage-plugin")
@@ -36,10 +39,10 @@ lazy val plugin = (project in file("scalac-scoverage-plugin"))
     EnvSupport.setEnv("CrossBuildScalaVersion", scalaVersion.value)
 
     CrossVersion.partialVersion(scalaVersion.value) match {
-      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
-        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.5")
-      case _ =>
-        Nil
+      case Some((2, 12)) => Seq(scalaXml) //TODO https://github.com/typesafehub/scala-logging/issues/54
+      case Some((2, 11)) => Seq(scalaXml, scalaLoggingSlf4j % Test)
+      case Some((2, 10)) => Seq(scalaLoggingSlf4j % Test)
+      case _ => Nil
     }
   })
 
