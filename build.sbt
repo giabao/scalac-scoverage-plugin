@@ -3,8 +3,8 @@ import sbtrelease.ReleasePlugin
 
 val appSettings = Seq(
   organization := "org.scoverage",
-  scalaVersion := "2.11.8",
-  crossScalaVersions := Seq("2.10.6", "2.11.8"),
+  scalaVersion := "2.12.0-M4",
+  crossScalaVersions := Seq("2.10.6", "2.11.8", "2.12.0-M4"),
   fork in Test := false,
   parallelExecution in Test := false,
   scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8"),
@@ -31,17 +31,17 @@ lazy val plugin = (project in file("scalac-scoverage-plugin"))
     "org.scala-lang" % "scala-reflect" % scalaVersion.value % Provided,
     "org.scala-lang" % "scala-compiler" % scalaVersion.value % Provided,
     "org.joda" % "joda-convert" % "1.8.1" % Test,
-    "joda-time" % "joda-time" % "2.9.3" % Test,
-    "com.typesafe.scala-logging" %% "scala-logging-slf4j" % "2.1.2" % Test
-  ) ++ (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, 11)) =>
-      EnvSupport.setEnv("CrossBuildScalaVersion", "2.11.8")
-      Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.5")
-    case _ =>
-      EnvSupport.setEnv("CrossBuildScalaVersion", "2.10.6")
-      Nil
-    })
-  )
+    "joda-time" % "joda-time" % "2.9.3" % Test
+  ) ++ {
+    EnvSupport.setEnv("CrossBuildScalaVersion", scalaVersion.value)
+
+    CrossVersion.partialVersion(scalaVersion.value) match {
+      case Some((2, scalaMajor)) if scalaMajor >= 11 =>
+        Seq("org.scala-lang.modules" %% "scala-xml" % "1.0.5")
+      case _ =>
+        Nil
+    }
+  })
 
 lazy val root = Project("scalac-scoverage", file("."))
   .settings(name := "scalac-scoverage")
