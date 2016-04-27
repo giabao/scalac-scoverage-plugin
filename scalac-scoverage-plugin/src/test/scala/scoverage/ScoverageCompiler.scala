@@ -11,8 +11,8 @@ import scala.tools.nsc.transform.{Transform, TypingTransformers}
 /** @author Stephen Samuel */
 object ScoverageCompiler {
 
-  val ScalaVersion = "2.11.7"
-  val ShortScalaVersion = ScalaVersion.dropRight(2)
+  val ScalaVersion = scala.util.Properties.versionNumberString.ensuring(_ != "")
+  val ShortScalaVersion = ScalaVersion.substring(0, ScalaVersion.lastIndexOf('.'))
 
   def classPath = getScalaJars.map(_.getAbsolutePath) :+ sbtCompileDir.getAbsolutePath :+ runtimeClasses.getAbsolutePath
 
