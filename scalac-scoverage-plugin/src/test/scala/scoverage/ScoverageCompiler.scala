@@ -143,38 +143,12 @@ class ScoverageCompiler(settings: scala.tools.nsc.Settings, reporter: scala.tool
       }
     }
   }
-
-  override def computeInternalPhases() {
+  override protected def computeInternalPhases(): Unit = {
+    super.computeInternalPhases()
     val phs = List(
-      syntaxAnalyzer -> "parse source into ASTs, perform simple desugaring",
-      analyzer.namerFactory -> "resolve names, attach symbols to named trees",
-      analyzer.packageObjects -> "load package objects",
-      analyzer.typerFactory -> "the meat and potatoes: type the trees",
       validator -> "scoverage validator",
       instrumentationComponent -> "scoverage instrumentationComponent",
-      patmat -> "translate match expressions",
-      superAccessors -> "add super accessors in traits and nested classes",
-      extensionMethods -> "add extension methods for inline classes",
-      pickler -> "serialize symbol tables",
-      refChecks -> "reference/override checking, translate nested objects",
-      uncurry -> "uncurry, translate function values to anonymous classes",
-      tailCalls -> "replace tail calls by jumps",
-      specializeTypes -> "@specialized-driven class and method specialization",
-      explicitOuter -> "this refs to outer pointers, translate patterns",
-      erasure -> "erase types, add interfaces for traits",
-      postErasure -> "clean up erased inline classes",
-      lazyVals -> "allocate bitmaps, translate lazy vals into lazified defs",
-      lambdaLift -> "move nested functions to top level",
-      constructors -> "move field definitions into constructors",
-      mixer -> "mixin composition",
-      cleanup -> "platform-specific cleanups, generate reflective calls",
-      genicode -> "generate portable intermediate code",
-      inliner -> "optimization: do inlining",
-      inlineExceptionHandlers -> "optimization: inline exception handlers",
-      closureElimination -> "optimization: eliminate uncalled closures",
-      deadCode -> "optimization: eliminate dead code",
-      testStore -> "scoverage teststore",
-      terminal -> "The last phase in the compiler chain"
+      testStore -> "scoverage teststore"
     )
     phs foreach (addToPhasesSet _).tupled
   }
