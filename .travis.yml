@@ -1,7 +1,31 @@
+sudo: required
+dist: trusty
 language: scala
 scala:
-   - 2.11.4
+- 2.10.6
+- 2.11.8
+- 2.12.0-M4
+env:
+- JDK=oraclejdk8
+- JDK=openjdk8
+- JDK=oraclejdk7
+- JDK=openjdk7
+before_script:
+- jdk_switcher use $JDK
 script:
-  - "sbt clean test"
-jdk:
-  - oraclejdk7
+- sbt ++$TRAVIS_SCALA_VERSION test
+matrix:
+  # scala 2.12 require java 8
+  exclude:
+    - scala: 2.12.0-M4
+      env: JDK=oraclejdk7
+    - scala: 2.12.0-M4
+      env: JDK=openjdk7
+cache:
+  directories:
+    - $HOME/.ivy2/cache/
+    - $HOME/.sbt/boot/
+before_cache:
+  # Tricks to avoid unnecessary cache updates
+  - find $HOME/.ivy2 -name "ivydata-*.properties" -delete
+  - find $HOME/.sbt -name "*.lock" -delete
